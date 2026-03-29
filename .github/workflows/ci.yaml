@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: [truenas_runners, runner1]
+    runs-on: [truenas_runners]
 
     steps:
       - uses: actions/checkout@v3
