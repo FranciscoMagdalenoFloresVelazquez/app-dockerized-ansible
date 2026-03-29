@@ -20,5 +20,8 @@ jobs:
       - name: Build image
         run: docker build -t ${{ secrets.DOCKER_USER }}/python-app ./app
 
+      - name: test image
+        run: docker run ${{ secrets.DOCKER_USER }}/python-app
+
       - name: Push image
         run: docker push ${{ secrets.DOCKER_USER }}/python-app
