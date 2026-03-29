@@ -23,7 +23,6 @@ The workflow is divided into two main parts:
 │   │   └── site.yaml             # Main site deployment playbook
 │   ├── roles/                    # Modular Ansible configurations
 │   │   ├── app/                  # Application deployment logic
-│   │   │   └── tasks/
 │   │   ├── common/               # Basic system configuration
 │   │   ├── docker/               # Docker engine installation
 │   │   └── npm/                  # Nginx Proxy Manager setup
