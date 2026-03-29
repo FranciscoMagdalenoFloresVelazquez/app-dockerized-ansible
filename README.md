@@ -1,11 +1,6 @@
 ```markdown
 # Full Project: Complete CI/CD & Deployment with Ansible
 
-![License](https://img.shields.io/github/license/username/repo-name?style=flat-square)
-![Ansible](https://img.shields.io/badge/ansible-v2.10%2B-blue.svg?logo=ansible&style=flat-square)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&style=flat-square)
-![NPM](https://img.shields.io/badge/npm-CB3837?logo=npm&style=flat-square)
-
 This project implements a fully automated DevOps pipeline for a simple Python application. It uses a modern CI/CD approach to build, test, and deploy a Dockerized application using GitHub Actions and Ansible Roles.
 
 ## 🚀 Overview
