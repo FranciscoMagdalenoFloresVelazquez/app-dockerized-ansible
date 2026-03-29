@@ -1,0 +1,10 @@
+--- 
+
+- name: Run python app
+  community.docker.docker_container:
+    name: python-app
+    image: "franciscomfloresvelazquez/python-app:latest"
+    state: started
+    restart_policy: always
+    ports:
+    - "5000:5000"
