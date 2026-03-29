@@ -5,6 +5,6 @@
     name: python-app
     image: "franciscomfloresvelazquez/python-app:latest"
     state: started
-    restart_policy: always
+    restart_policy: unless-stopped
     ports:
     - "5000:5000"
