@@ -1,0 +1,95 @@
+--- 
+
+- name: actualizar paquetes de ubuntu
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+
+- name: desinstalar versiones anteriores de docker
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: absent
+    purge: yes
+  loop:
+    - docker.io
+    - docker-compose
+    - docker-compose-v2
+    - docker-doc
+    - podman-docker
+    - containerd
+    - runc
+
+- name: instalar ca-certificades curl
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - ca-certificates
+    - curl
+
+- name: crear y dar permisos a ruta
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: agregar keys a docker.asc
+  ansible.builtin.shell:
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+- name: permisos a docker.asc
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+
+- name: instalar lsb_release
+  ansible.builtin.apt:
+    name: lsb-release
+    state: present
+
+- name: Crear archivo docker.sources equivalente a EOF
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/docker.sources
+    content: |
+      Types: deb
+      URIs: https://download.docker.com/linux/ubuntu
+      Suites: {{ ansible_lsb.codename }}
+      Components: stable
+      Signed-By: /etc/apt/keyrings/docker.asc
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: actualizar paquetes de ubuntu
+  ansible.builtin.apt:
+    update_cache: true
+
+#sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+- name: instalar docker
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+  notify: iniciar servicio docker
+
+- name: Ensure docker is running
+  ansible.builtin.systemd_service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: poner permisos al usuario para ejecutar comando docker
+  ansible.builtin.user:
+    name: "{{ dev_user }}"
+    groups: docker
+    append: yes
+        
+

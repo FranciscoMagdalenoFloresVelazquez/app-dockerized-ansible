@@ -1,0 +1,10 @@
+---
+
+- hosts: test-server
+  become: true
+  roles:
+   - common
+   - docker
+   - npm
+   - app
+  

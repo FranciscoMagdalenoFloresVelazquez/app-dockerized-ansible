@@ -1,0 +1,12 @@
+---
+
+- name: Ensure SSH is running
+  service:
+    name: ssh
+    state: started
+    enabled: true
+
+- name: Restart SSH
+  service:
+    name: ssh
+    state: restarted

@@ -1,0 +1,8 @@
+---
+
+- name: Ensure user exists
+  ansible.builtin.user:
+    name: "{{ dev_user }}"
+    groups: sudo
+    create_home: true
+    shell: /bin/bash

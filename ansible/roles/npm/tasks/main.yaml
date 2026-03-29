@@ -1,0 +1,22 @@
+---
+
+- name: Create volumes
+  community.docker.docker_volume:
+    name: "{{ item }}"
+  loop:
+    - npm_data
+    - npm_letsencrypt
+
+- name: Run Nginx Proxy Manager
+  community.docker.docker_container:
+    name: npm
+    image: jlesage/nginx-proxy-manager
+    state: started
+    restart_policy: always
+    ports:
+      - "5954:8080"
+      - "5955:8181"
+      - "5956:4443"
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt

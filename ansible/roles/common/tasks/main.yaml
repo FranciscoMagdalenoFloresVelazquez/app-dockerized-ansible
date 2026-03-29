@@ -1,0 +1,16 @@
+---
+
+- name: Set timezone
+  ansible.builtin.timezone:
+    name: "{{ timezone }}"
+
+- name: create user
+  import_tasks: users.yaml
+
+- name: Install base packages
+  import_tasks: packages.yaml
+
+- name: Configure SSH
+  import_tasks: ssh.yaml
+
+
