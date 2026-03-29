@@ -35,5 +35,8 @@ jobs:
       - name: Stop container
         run: docker stop python-app
 
+      - name: kill container
+        run: docker rm python-app
+
       - name: Push image
         run: docker push ${{ secrets.DOCKER_USER }}/python-app
