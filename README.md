@@ -1,3 +1,4 @@
+```markdown
 # Full Project: Complete CI/CD & Deployment with Ansible
 
 ![License](https://img.shields.io/github/license/username/repo-name?style=flat-square)
@@ -38,102 +39,100 @@ The workflow is divided into two main parts:
 │   ├── app.py                    # Simple Python web application
 │   └── requirements.txt          # Python dependencies
 └── README.md                     # This documentation
+```
 
+## 🛠️ Ansible Key Components
 
-
-🛠️ Ansible Key Components
 This project uses an organized Ansible structure:
 
-⚙️ Ansible Configuration (ansible.cfg)
+### ⚙️ Ansible Configuration (`ansible.cfg`)
 Contains project-wide settings, such as inventory paths and specific role paths to optimize the development environment.
 
-📦 Requirements (requirements.yaml)
-We use the community.docker collection to manage Docker containers efficiently. This file ensures all required external collections are installed.
+### 📦 Requirements (`requirements.yaml`)
+We use the `community.docker` collection to manage Docker containers efficiently. This file ensures all required external collections are installed.
 
-🌍 Global Variables (group_vars/all.yaml)
-Defines variables available to all roles. For example, dev_user is defined here to ensure consistent deployment permissions across the server.
+### 🌍 Global Variables (`group_vars/all.yaml`)
+Defines variables available to all roles. For example, `dev_user` is defined here to ensure consistent deployment permissions across the server.
 
-🧱 Ansible Roles
-  
-  -common: Updates system packages and installs essential tools.
+### 🧱 Ansible Roles
 
-  -docker: Installs and configures the Docker engine.
+* **`common`**: Updates system packages and installs essential tools.
+* **`docker`**: Installs and configures the Docker engine.
+* **`npm`**: Sets up Nginx Proxy Manager (NPM) in a Docker container, providing an easy way to manage SSL certificates and reverse proxies for public internet access.
+* **`app`**: Deploys the Python application using the Docker image built in the pipeline.
 
-  -npm: Sets up Nginx Proxy Manager (NPM) in a Docker container, providing an easy way to manage SSL certificates and reverse proxies for public internet access.
+## 🔄 CI/CD Pipeline
 
-  -app: Deploys the Python application using the Docker image built in the pipeline.
-
-🔄 CI/CD Pipeline
 The project uses GitHub Actions to automate the entire lifecycle.
 
-CI: Build & Test Stage
+### CI: Build & Test Stage
 
-  1-Lint/Test: Analyzes the Python code and runs unit tests.
+1.  **Lint/Test**: Analyzes the Python code and runs unit tests.
+2.  **Docker Build**: Builds the Docker image from `app/Dockerfile`.
+3.  **Security Scan**: Scans the image for vulnerabilities.
+4.  **Docker Push**: Tags and pushes the image to Docker Hub.
 
-  2-Docker Build: Builds the Docker image from app/Dockerfile.
+### CD: Automated Deployment Stage
 
-  3-Security Scan: Scans the image for vulnerabilities.
-
-  4-Docker Push: Tags and pushes the image to Docker Hub.
-
-CD: Automated Deployment Stage
 This stage runs an Ansible playbook on the self-hosted GitHub Actions runner.
 
-  1-Ansible Installation: Installs Ansible on the runner environment.
+1.  **Ansible Installation**: Installs Ansible on the runner environment.
+2.  **Inventory Creation**: Populates the `hosts.ini` with deployment secrets (IP, keys).
+3.  **Community Collection Setup**: Installs `community.docker` from `requirements.yaml`.
+4.  **Playbook Execution**: Runs `playbooks/site.yaml`.
+5.  **Role Orchestration**: The playbook executes roles sequentially:
+    * Prepares the server (`common`).
+    * Installs Docker (`docker`).
+    * Deploys NPM (`npm`).
+    * Deploys the application with the new image (`app`).
 
-  2-Inventory Creation: Populates the hosts.ini with deployment secrets (IP, keys).
+## ⚙️ How to Run Locally (Manual Deployment)
 
-  3-Community Collection Setup: Installs community.docker from requirements.yaml.
-
-  4-Playbook Execution: Runs playbooks/site.yaml.
-
-  5-Role Orchestration: The playbook executes roles sequentially:
-
-    -Prepares the server (common).
-
-    -Installs Docker (docker).
-
-    -Deploys NPM (npm).
-
-    -Deploys the application with the new image (app).
-
-⚙️ How to Run Locally (Manual Deployment)
 To manually trigger a deployment from your local machine, follow these steps.
 
-Prerequisites
-  -Python 3 & Ansible installed.
+### Prerequisites
 
-  -A target server (e.g., a virtual machine or VPS) accessible via SSH.
+* Python 3 & Ansible installed.
+* A target server (e.g., a virtual machine or VPS) accessible via SSH.
 
-Step 1: Install Ansible Dependencies
+### Step 1: Install Ansible Dependencies
+
 Run this command in the project root:
 
-Bash
+```bash
 ansible-galaxy install -r ansible/requirements.yaml
-Step 2: Configure Inventory
-Edit ansible/inventory/hosts.ini and add your server's IP and connection details:
+```
 
-Ini, TOML
+### Step 2: Configure Inventory
+
+Edit `ansible/inventory/hosts.ini` and add your server's IP and connection details:
+
+```ini
 [all]
 your_server_ip_or_hostname ansible_user=root ansible_ssh_private_key_file=/path/to/your/key
-Step 3: Configure Global Variables
-Check ansible/inventory/group_vars/all.yaml and set your preferred dev_user.
+```
 
-Step 4: Run the Deployment Playbook
-From the ansible directory:
+### Step 3: Configure Global Variables
 
-Bash
+Check `ansible/inventory/group_vars/all.yaml` and set your preferred `dev_user`.
+
+### Step 4: Run the Deployment Playbook
+
+From the `ansible` directory:
+
+```bash
 ansible-playbook -i inventory/hosts.ini playbooks/site.yaml
+```
 
-🌐 Expose to Internet
+## 🌐 Expose to Internet
+
 Once deployed, your application is accessible locally. To expose it to the internet:
 
-  1-Port Forwarding (OpenWrt/Router): Configure port forwarding on your router/gateway to point incoming TCP traffic on ports 5954 and 5956 to the local IP of your server running NPM.
+1.  **Port Forwarding (OpenWrt/Router)**: Configure port forwarding on your router/gateway to point incoming TCP traffic on ports 5954 and 5956 to the local IP of your server running NPM.
+2.  **Nginx Proxy Manager**: Access the NPM administration console (usually port 5955).
+3.  **Proxy Host**: Create a new "Proxy Host" entry in NPM. Set your domain name and point it to the container name or local IP of your application.
+4.  **SSL**: Use the NPM interface to automatically generate a free Let's Encrypt SSL certificate for secure access.
 
-  2-Nginx Proxy Manager: Access the NPM administration console (usually port 5955).
-
-  3-Proxy Host: Create a new "Proxy Host" entry in NPM. Set your domain name and point it to the container name or local IP of your application.
-
-  4-SSL: Use the NPM interface to automatically generate a free Let's Encrypt SSL certificate for secure access.
-
-Disclaimer: This project is provided as-is for educational purposes. Security best practices (like firewall configuration and secret management) should be followed in a production environment.
+---
+**Disclaimer**: This project is provided as-is for educational purposes. Security best practices (like firewall configuration and secret management) should be followed in a production environment.
+```
