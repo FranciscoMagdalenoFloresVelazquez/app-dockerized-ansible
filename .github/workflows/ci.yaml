@@ -20,8 +20,20 @@ jobs:
       - name: Build image
         run: docker build -t ${{ secrets.DOCKER_USER }}/python-app ./app
 
-      - name: Test image
-        run: docker run ${{ secrets.DOCKER_USER }}/python-app
+     # - name: Test image
+     #   run: docker run ${{ secrets.DOCKER_USER }}/python-app
+
+      - name: Run container
+        run: docker run -d -p 5000:5000 --name python-app ${{ secrets.DOCKER_USER }}/python-app
+
+      - name: Esperar
+        run: sleep 5
+
+      - name: Test endpoint
+        run: curl http://localhost:5000
+
+      - name: Stop container
+        run: docker stop python-app
 
       - name: Push image
         run: docker push ${{ secrets.DOCKER_USER }}/python-app
